@@ -9,20 +9,29 @@ nl = 2
 
 start = time.time()
 
-for i in range(120):
+for i in range(50):
 	url = to_visit[0]
 	nl -=1
 	print(i+1,len(to_visit),nl,url)
 
-	response = requests.get(url)
-	if response.headers['Content-Type'] == "text/html; charset=utf-8":
-		data = response.content.decode('utf-8')
-	elif response.headers['Content-Type'] == "text/html":
-		data = response.content.decode('utf-8')
-	else:
-		visited[url] = True
-		to_visit = to_visit[1:]
-		continue
+	try:
+		response = requests.head(url)
+		if response.headers['Content-Type'] in ["text/html; charset=utf-8" , "text/html"]:
+			response = requests.get(url)
+			data = response.content.decode('utf-8')
+		else:
+			visited[url] = True
+			to_visit = to_visit[1:]
+			continue
+	except:
+		response = requests.get(url)
+		if response.headers['Content-Type'] in ["text/html; charset=utf-8" , "text/html"]:
+			# response = requests.get(url)
+			data = response.content.decode('utf-8')
+		else:
+			visited[url] = True
+			to_visit = to_visit[1:]
+			continue
 
 	separated = data.split('href="')[1:]
 	# nl = 0
